@@ -19,7 +19,7 @@ from __future__ import absolute_import
 # Data analysis related imports
 import numpy as np
 
-__version__ = '0.1.0'
+__version__ = '0.1.2'
 
 
 def loss(cable_type, length):

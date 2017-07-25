@@ -35,9 +35,9 @@ def release(ctx, deploy=False, test=False, version=''):
             run("git push origin --tags")
             run("python setup.py register sdist upload")
     else:
-        print("* Have you updated the version in cableloss.py?")
-        print("* Have you updated CHANGELOG.md?")
-        print("* Have you fixed any last minute bugs?")
+        print("- Have you updated the version in cableloss.py?")
+        print("- Have you updated CHANGELOG.md?")
+        print("- Have you fixed any last minute bugs?\n")
         print("If you answered yes to all of the above questions,")
         print("then run `inv release --deploy -vX.YY.ZZ` to:")
         print("- Checkout master")
