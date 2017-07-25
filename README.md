@@ -11,8 +11,6 @@ loss for a given cable type and length.
 ## Requirements
 
 - [numpy][]
-- `csv` module from the [Python Standard Library][]
-- `os` module from the [Python Standard Library][]
 
 ## Contributing
 
