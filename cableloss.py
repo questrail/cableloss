@@ -13,7 +13,7 @@ The length should be specified in feet.
 # Data analysis related imports
 import numpy as np
 
-__version__ = '0.1.4'
+__version__ = '0.2.0'
 
 
 def loss(cable_type, length):
