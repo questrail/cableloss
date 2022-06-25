@@ -5,8 +5,8 @@
 [![Coverage Status][coveralls image]][coveralls link]
 [![License Badge][license image]][LICENSE.txt]
 
-[cableloss][] is a Python (2.6+/3.3+) module that calculates the cable
-loss for a given cable type and length.
+[cableloss][] is a Python 3.3+ module that calculates the cable loss for a given
+cable type and length.
 
 ## Requirements
 

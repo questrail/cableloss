@@ -4,6 +4,9 @@ import re
 
 from setuptools import setup
 
+with open("README.md", "r", encoding="utf-8") as fh:
+    long_description = fh.read()
+
 here = os.path.abspath(os.path.dirname(__file__))
 
 
@@ -33,12 +36,6 @@ def find_version(*file_paths):
     raise RuntimeError("Unable to find version string.")
 
 
-try:
-    import pypandoc
-    long_description = pypandoc.convert('README.md', 'rst')
-except(IOError, ImportError):
-    long_description = open('README.md').read()
-
 setup(
     name='cableloss',
     version=find_version('cableloss.py'),
@@ -47,9 +44,10 @@ setup(
     py_modules=['cableloss'],
     url='http://github.com/questrail/cableloss',
     license='MIT',
-    description='Calculate cable loss based on cable type'
+    description='Calculate cable loss based on cable type '
         + 'and length',
     long_description=long_description,
+    long_description_content_type="text/markdown",
     requires=['numpy (>=1.22.0)'],
     classifiers=[
         'Programming Language :: Python',
