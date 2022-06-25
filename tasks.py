@@ -1,21 +1,32 @@
+# -*- coding: utf-8 -*-
+# Copyright (c) 2022 The cableloss developers. All rights reserved.
+# Project site: https://github.com/questrail/cableloss
+# Use of this source code is governed by a MIT-style license that
+# can be found in the LICENSE.txt file for the project.
 from invoke import run, task
+from unipath import Path
 
 TESTPYPI = "https://testpypi.python.org/pypi"
+ROOT_DIR = Path(__file__).ancestor(1)
 
 
 @task
 def lint(ctx):
     """Run flake8 to lint code"""
-    run("python setup.py flake8")
+    run("python3 -m flake8")
+
+
+@task
+def freeze(ctx):
+    # pylint: disable=W0613
+    """Freeze the pip requirements using pip-chill"""
+    run(f"pip-chill > {Path(ROOT_DIR, 'requirements.txt')}")
 
 
 @task(lint)
 def test(ctx):
-    """Lint and run unit tests"""
-    cmd = "{} {}".format(
-        "nosetests",
-        "--with-coverage --cover-erase --cover-package=cableloss --cover-html")
-    run(cmd)
+    """Lint, unit test, and check setup.py"""
+    run("nose2")
 
 
 @task()
@@ -33,13 +44,14 @@ def release(ctx, deploy=False, test=False, version=''):
             run("git tag -a v{ver} -m 'v{ver}'".format(ver=version))
             run("git push")
             run("git push origin --tags")
-            run("python setup.py register sdist upload")
+            run("python3 -m build")
+            run("python3 -m twine upload dist/*")
     else:
-        print("- Have you updated the version in cableloss.py?")
-        print("- Have you updated CHANGELOG.md?")
-        print("- Have you fixed any last minute bugs?\n")
+        print("* Have you updated the version?")
+        print("* Have you updated CHANGELOG.md?")
+        print("* Have you fixed any last minute bugs?")
         print("If you answered yes to all of the above questions,")
-        print("then run `inv release --deploy -vX.YY.ZZ` to:")
+        print("then run `invoke release --deploy -vX.YY.ZZ` to:")
         print("- Checkout master")
         print("- Tag the git release with provided vX.YY.ZZ version")
         print("- Push the master branch and tags to repo")

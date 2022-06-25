@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2017 The cableloss developers. All rights reserved.
+# Copyright (c) 2017-2022 The cableloss developers. All rights reserved.
 # Project site: https://github.com/questrail/cableloss
 # Use of this source code is governed by a MIT-style license that
 # can be found in the LICENSE.txt file for the project.
@@ -7,12 +7,6 @@
 
 The length should be specified in feet.
 """
-
-# Try to future proof code so that it's Python 3.x ready
-from __future__ import print_function
-from __future__ import unicode_literals
-from __future__ import division
-from __future__ import absolute_import
 
 # Standard module imports
 
@@ -23,12 +17,18 @@ __version__ = '0.1.4'
 
 
 def loss(cable_type, length):
-    # type: (str, Union[int, float]) -> np.array
+    # type: (str, Union[int, float]) -> np.array # noqa
     """Return the cable loss based on the cable type and length in feet
+
+    args:
+        cable_type: A string listing the cable type
+        length: A number in feet
+
+    returns:
+        A numpy array listing the frequency in Hz and amplitude in dB
     """
 
-    data_type = np.dtype([
-        (b'frequency', b'f8'), (b'amplitude_db', b'f8')])
+    data_type = [('frequency', np.float64), ('amplitude_db', np.float64)]
 
     # The following cable losses are for 100 ft of cable.
     cable_loss_100_ft = {
@@ -101,7 +101,11 @@ def loss(cable_type, length):
             (8.00e8, 3.6516),
             (9.00e8, 3.9000),
             (1.00e9, 4.0900),
-            (1.50e9, 5.1000)], dtype=data_type),
+            (1.50e9, 5.1000),
+            (1.80e9, 5.7000),
+            (2.00e9, 6.0000),
+            (2.50e9, 6.8000),
+            (5.80e9, 10.800)], dtype=data_type),
     }
 
     loss = cable_loss_100_ft[cable_type]

@@ -1,16 +1,10 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2017 The cableloss developers. All rights reserved.
+# Copyright (c) 2017-2022 The cableloss developers. All rights reserved.
 # Project site: https://github.com/questrail/cableloss
 # Use of this source code is governed by a MIT-style license that
 # can be found in the LICENSE.txt file for the project.
 """Unit tests for cableloss.py.
 """
-
-# Try to future proof code so that it's Python 3.x ready
-from __future__ import print_function
-from __future__ import unicode_literals
-from __future__ import division
-from __future__ import absolute_import
 
 # Standard module imports
 import unittest
@@ -26,10 +20,7 @@ class TestCalculatingCableLoss(unittest.TestCase):
         # Setup the known data arrays
 
         self.my_data_type = np.dtype([
-            (b'frequency', b'f8'), (b'amplitude_db', b'f8')])
-
-        #  self.my_data_type = {'names': ('frequency', 'amplitude_db'),
-        #  'formats': ('f8', 'f8')}
+            ('frequency', np.float64), ('amplitude_db', np.float64)])
 
     def test_rg_58_at_100_ft(self):
         expected_cable_loss = np.array([
