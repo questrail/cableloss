@@ -50,10 +50,14 @@ $ inv -l
 [cableloss]: https://github.com/questrail/cableloss
 [coveralls image]: http://img.shields.io/coveralls/questrail/cableloss/master.svg
 [coveralls link]: https://coveralls.io/r/questrail/cableloss
+[invoke]: https://www.pyinvoke.org/
 [LICENSE.txt]: https://github.com/questrail/cableloss/blob/develop/LICENSE.txt
 [license image]: http://img.shields.io/pypi/l/cableloss.svg
 [numpy]: http://www.numpy.org
 [pull request]: https://help.github.com/articles/using-pull-requests
+[pyenv]: https://github.com/pyenv/pyenv
+[pyenv-install]: https://github.com/pyenv/pyenv#installation
+[pyenv-virtualenv]: https://github.com/pyenv/pyenv-virtualenv
 [pypi ver image]: http://img.shields.io/pypi/v/cableloss.svg
 [pypi ver link]: https://pypi.python.org/pypi/cableloss
 [python standard library]: https://docs.python.org/2/library/
