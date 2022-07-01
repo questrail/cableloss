@@ -6,7 +6,12 @@
 [![License Badge][license image]][LICENSE.txt]
 
 [cableloss][] is a Python 3.3+ module that calculates the cable loss for a given
-cable type and length.
+cable type and length. Supported cable types include:
+
+- RG-58
+- RG-58/U
+- LMR-195
+- LMR-400
 
 ## Requirements
 
@@ -18,44 +23,29 @@ Contributions are welcome! To contribute please:
 
 1. Fork the repository
 2. Create a feature branch
-3. Code
-4. Submit a [pull request][]
+3. Add code and tests
+4. Pass lint and tests
+5. Submit a [pull request][]
 
-### Virtualenv
+## Development Setup
+
+### Development Setup Using pyenv
 
 Use the following commands to create a Python 3.9.9 virtualenv using [pyenv][]
 and [pyenv-virtualenv][], install the requirements in the virtualenv named
-`sdfascii`, and list the available [Invoke][] tasks.
+`cableloss`, and list the available [Invoke][] tasks.
 
 ```bash
-$ pyenv virtualenv 3.9.9 sdfascii
-$ pyenv activate sdfascii
+$ pyenv virtualenv 3.9.9 cableloss
+$ pyenv activate cableloss
 $ pip install -r requirements.txt
 $ inv -l
 ```
 
-### Submitting Pull Requests
-
-[keysight][] is developed using [Scott Chacon][]'s [GitHub Flow][]. To
-contribute, fork [sdfascii][], create a feature branch, and then submit
-a pull request.  [GitHub Flow][] is summarized as:
-
-- Anything in the `master` branch is deployable
-- To work on something new, create a descriptively named branch off of
-  `master` (e.g., `new-oauth2-scopes`)
-- Commit to that branch locally and regularly push your work to the same
-  named branch on the server
-- When you need feedback or help, or you think the brnach is ready for
-  merging, open a [pull request][].
-- After someone else has reviewed and signed off on the feature, you can
-  merge it into master.
-- Once it is merged and pushed to `master`, you can and *should* deploy
-  immediately.
-
 # License
 
 [cableloss][] is released under the MIT license. Please see the
-[LICENSE.txt] file for more information.
+[LICENSE.txt][] file for more information.
 
 [cableloss]: https://github.com/questrail/cableloss
 [coveralls image]: http://img.shields.io/coveralls/questrail/cableloss/master.svg
