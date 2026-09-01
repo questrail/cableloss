@@ -4,6 +4,8 @@ This file contains all notable changes to the [cableloss][] project.
 
 ## Unreleased
 
+## v0.3.0 - 2026-09-01
+
 ### Added
 
 - Build, lock, and run the project with [uv][] and [Just][]. The `setup.py`,

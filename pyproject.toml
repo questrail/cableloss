@@ -2,7 +2,7 @@
 
 [project]
 name = "cableloss"
-version = "0.2.1"
+version = "0.3.0"
 description = "Calculate cable loss based on cable type and length"
 readme = "README.md"
 license = "MIT"
