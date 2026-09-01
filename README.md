@@ -1,21 +1,60 @@
 # cableloss
 
-[![PyPi Version][pypi ver image]][pypi ver link]
-[![Build Status][travis image]][travis link]
+[![PyPI Version][pypi ver image]][pypi ver link]
+[![Python Versions][pyversions image]][pypi ver link]
+[![CI Status][ci image]][ci link]
 [![Coverage Status][coveralls image]][coveralls link]
 [![License Badge][license image]][LICENSE.txt]
 
-[cableloss][] is a Python 3.3+ module that calculates the cable loss for a given
-cable type and length. Supported cable types include:
+[cableloss][] is a Python 3.12+ module that calculates the cable loss for a
+given cable type and length. The published loss figures are tabulated per 100
+ft of cable and scaled to the requested length, which is linear because the
+amplitudes are in dB.
+
+Supported cable types:
 
 - RG-58
 - RG-58/U
 - LMR-195
 - LMR-400
 
-## Requirements
+## Installation
 
-- [numpy][]
+You can install [cableloss][] either via the Python Package Index (PyPI) or
+from source.
+
+To add it to a project managed with [uv][], which records it in your
+`pyproject.toml` and lock file:
+
+```bash
+$ uv add cableloss
+```
+
+Or to install it with pip:
+
+```bash
+$ pip install cableloss
+```
+
+**Source:** https://github.com/questrail/cableloss
+
+## Usage
+
+`loss()` takes a cable type and a length in feet, and returns a numpy
+structured array with a `frequency` field in Hz and an `amplitude_db` field in
+dB:
+
+```python
+>>> import cableloss
+>>> cableloss.loss("LMR-400", 50)["amplitude_db"][:3]
+array([0.0056, 0.0059, 0.0094])
+```
+
+An unrecognized cable type raises a `KeyError`.
+
+## Dependencies
+
+See the `pyproject.toml` and `uv.lock` files for the dependency requirements.
 
 ## Contributing
 
@@ -29,37 +68,127 @@ Contributions are welcome! To contribute please:
 
 ## Development Setup
 
-### Development Setup Using pyenv
+### Development Setup Using uv
 
-Use the following commands to create a Python 3.9.9 virtualenv using [pyenv][]
-and [pyenv-virtualenv][], install the requirements in the virtualenv named
-`cableloss`, and list the available [Invoke][] tasks.
+#### Development Setup on macOS
 
 ```bash
-$ pyenv virtualenv 3.9.9 cableloss
-$ pyenv activate cableloss
-$ pip install -r requirements.txt
-$ inv -l
+$ brew install uv just
 ```
 
-# License
+With [uv][] and [Just][] installed, development has been simplified to simply
+running [Just][] to see the available commands.
+
+```bash
+$ just
+```
+
+[ruff][] and [pyright][] are deliberately absent from that line. Both are dev
+dependencies pinned in `uv.lock` and reached through `uv run`, so every recipe
+and every CI job uses the same version. A `brew install ruff` would put a
+second, unpinned copy on the path for an editor to find, and ruff releases
+change how code is formatted: the editor would then reformat code that
+`ruff format --check` rejects on the next run.
+
+#### Releasing to PyPI
+
+`just release` cuts the release. It first checks that a release is possible at
+all, then lints, type checks, and tests, then shows the entries waiting under
+Unreleased and the version each kind of bump would produce, and asks which to
+cut. Once answered it bumps the version, closes out the CHANGELOG, updates the
+lock file, commits, and tags. Pushing the tag is what publishes.
+
+```bash
+$ just release
+
+Releasing from 0.2.1, with these entries under Unreleased:
+
+    ### Changed
+
+    - Moved the module into a `src/cableloss/` package.
+
+    1) patch   0.2.1 -> 0.2.2
+    2) minor   0.2.1 -> 0.3.0
+    3) major   0.2.1 -> 1.0.0
+    q) cancel
+
+Which release? [1] 2
+
+Tagged v0.3.0. Publish it with:
+
+    git push --follow-tags
+```
+
+The entries decide the bump, so the prompt puts them next to the versions they
+would produce rather than leaving the choice to memory. Answering `q`, or
+anything unrecognized, changes nothing.
+
+The tag push runs the [release workflow][], which waits on the whole [CI
+workflow][ci link] before it does anything else: the 3.12, 3.13, and 3.14
+matrix and the dependency floor job. `git push --follow-tags` starts both at
+once, so without that wait an upload could go out while 3.14 was still running,
+or already red. It then checks that the tagged commit is on `master`, since a
+tag is only a pointer and one placed anywhere else would otherwise publish
+whatever it points at, rechecks the tag against the version in `pyproject.toml`,
+and builds.
+
+Every check to that point runs against the source tree, so the workflow then
+installs the wheel it just built somewhere `src/` is not on the path and imports
+it there, which is the only step that can catch a packaging mistake that left
+something out of the distribution. It uploads once that passes. There is no PyPI
+API token anywhere: the workflow authenticates with [trusted publishing][], which
+mints a short lived credential from the GitHub OIDC identity of that run. That
+same identity signs a [PEP 740][] attestation for each distribution, which PyPI
+serves beside the file it attests: trusted publishing establishes who uploaded,
+and the attestation establishes what was uploaded and which workflow built it.
+The upload skips anything PyPI already holds, so a run that uploaded one
+distribution and then failed on the other can be retried instead of stranding a
+version number that PyPI will never allow to be reused.
+
+Uploading is followed by a [GitHub release][releases] for the tag, carrying the
+CHANGELOG section for that version as its notes and the built distributions as
+its assets. The notes are collected before the upload rather than after, so that
+a CHANGELOG with no section for the version being released stops the release
+while stopping it is still possible.
+
+Pushing the tag is the point of no return, since PyPI never lets a version
+number be reused. Everything `just release` does is local and amendable until
+then, and it refuses to start against a dirty working tree, off `master`, on a
+`master` behind its upstream, with a CHANGELOG whose Unreleased section is
+empty, or when the tag it would create already exists. Those refusals come
+before the lint and test run, so a release that cannot happen is turned away at
+once rather than after the suite. A refusal leaves the version and the CHANGELOG
+untouched.
+
+`just build` runs the same checks and produces the same distributions without
+releasing anything, which is the way to inspect what CI would upload.
+
+This depends on one piece of configuration that lives outside the repository. A
+[trusted publisher][trusted publishing] has to be registered for `cableloss` on
+PyPI, pointing at the `questrail/cableloss` repository, the `release.yml`
+workflow, and the `pypi` environment. It is a one time setup per project.
+
+## License
 
 [cableloss][] is released under the MIT license. Please see the
 [LICENSE.txt][] file for more information.
 
 [cableloss]: https://github.com/questrail/cableloss
-[coveralls image]: http://img.shields.io/coveralls/questrail/cableloss/master.svg
-[coveralls link]: https://coveralls.io/r/questrail/cableloss
-[invoke]: https://www.pyinvoke.org/
-[LICENSE.txt]: https://github.com/questrail/cableloss/blob/develop/LICENSE.txt
-[license image]: http://img.shields.io/pypi/l/cableloss.svg
-[numpy]: http://www.numpy.org
+[ci image]: https://github.com/questrail/cableloss/actions/workflows/ci.yml/badge.svg?branch=master
+[ci link]: https://github.com/questrail/cableloss/actions/workflows/ci.yml
+[coveralls image]: https://coveralls.io/repos/github/questrail/cableloss/badge.svg?branch=master
+[coveralls link]: https://coveralls.io/github/questrail/cableloss?branch=master
+[just]: https://just.systems/
+[LICENSE.txt]: https://github.com/questrail/cableloss/blob/master/LICENSE.txt
+[license image]: https://img.shields.io/pypi/l/cableloss.svg
 [pull request]: https://help.github.com/articles/using-pull-requests
-[pyenv]: https://github.com/pyenv/pyenv
-[pyenv-install]: https://github.com/pyenv/pyenv#installation
-[pyenv-virtualenv]: https://github.com/pyenv/pyenv-virtualenv
-[pypi ver image]: http://img.shields.io/pypi/v/cableloss.svg
+[pypi ver image]: https://img.shields.io/pypi/v/cableloss.svg
 [pypi ver link]: https://pypi.python.org/pypi/cableloss
-[python standard library]: https://docs.python.org/2/library/
-[travis image]: http://img.shields.io/travis/questrail/cableloss/master.svg
-[travis link]: https://travis-ci.org/questrail/cableloss
+[PEP 740]: https://peps.python.org/pep-0740/
+[pyright]: https://microsoft.github.io/pyright/
+[pyversions image]: https://img.shields.io/pypi/pyversions/cableloss.svg
+[release workflow]: https://github.com/questrail/cableloss/blob/master/.github/workflows/release.yml
+[releases]: https://github.com/questrail/cableloss/releases
+[ruff]: https://docs.astral.sh/ruff/
+[trusted publishing]: https://docs.pypi.org/trusted-publishers/
+[uv]: https://docs.astral.sh/uv/
